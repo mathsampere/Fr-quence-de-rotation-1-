@@ -1,0 +1,366 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#14283D">
+<title>Calcul vitesse de perçage</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #14283D, #263F55);
+    color: #243447;
+}
+
+.application {
+    width: 100%;
+    max-width: 440px;
+    background: #F3F6F9;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+}
+
+.entete {
+    background: #14283D;
+    color: white;
+    text-align: center;
+    padding: 25px 15px;
+}
+
+.entete .icone {
+    font-size: 42px;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+.entete p {
+    color: #B8C9D8;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.contenu {
+    padding: 25px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.materiaux {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.materiau {
+    border: 2px solid #D5DEE7;
+    background: white;
+    color: #243447;
+    padding: 17px 8px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    min-height: 58px;
+}
+
+.materiau.actif {
+    background: #DCEEFF;
+    border-color: #2789D8;
+    color: #155C9B;
+}
+
+.diametre-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: white;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 25px;
+}
+
+.diametre-box button {
+    width: 55px;
+    height: 55px;
+    border: none;
+    border-radius: 12px;
+    background: #DCE8F1;
+    color: #173B58;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#diametre {
+    width: 90px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    border: none;
+    background: transparent;
+    color: #14283D;
+    outline: none;
+}
+
+.unite {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.resultat {
+    background: #14283D;
+    color: white;
+    text-align: center;
+    border-radius: 16px;
+    padding: 22px 10px;
+    margin-bottom: 20px;
+}
+
+.resultat p {
+    font-size: 13px;
+    color: #B8D8EC;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin: 0 0 12px;
+}
+
+#valeur {
+    font-size: clamp(42px, 12vw, 62px);
+    font-weight: bold;
+    color: #FFAD48;
+    line-height: 1.2;
+}
+
+.trmin {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.calculer {
+    width: 100%;
+    padding: 19px;
+    background: #E77C21;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    min-height: 60px;
+}
+
+.calculer:active, .materiau:active {
+    transform: scale(0.98);
+}
+
+#message {
+    color: #C0392B;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 12px;
+    min-height: 18px;
+}
+
+.pied {
+    text-align: center;
+    padding: 0 10px 20px;
+    font-size: 11px;
+    color: #78899A;
+}
+
+button:focus-visible {
+    outline: 3px solid #2789D8;
+    outline-offset: 3px;
+}
+
+@media (max-width: 360px) {
+    .contenu {
+        padding: 18px;
+    }
+
+    h1 {
+        font-size: 21px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="application">
+
+    <header class="entete">
+        <div class="icone">⚙️</div>
+        <h1>CALCUL DE PERÇAGE</h1>
+        <p>CALCULATEUR DE VITESSE DE ROTATION</p>
+    </header>
+
+    <main class="contenu">
+
+        <label>1. Choisir le matériau</label>
+
+        <div class="materiaux">
+            <button class="materiau actif"
+                data-materiau="Acier"
+                aria-pressed="true">Acier</button>
+
+            <button class="materiau"
+                data-materiau="Laiton"
+                aria-pressed="false">Laiton</button>
+
+            <button class="materiau"
+                data-materiau="Fonte"
+                aria-pressed="false">Fonte</button>
+
+            <button class="materiau"
+                data-materiau="Bronze"
+                aria-pressed="false">Bronze</button>
+        </div>
+
+        <label for="diametre">2. Diamètre du foret</label>
+
+        <div class="diametre-box">
+            <button type="button" id="moins"
+                aria-label="Diminuer le diamètre">−</button>
+
+            <input type="number" id="diametre"
+                value="10" min="0.1" max="100"
+                step="0.5" inputmode="decimal"
+                aria-label="Diamètre en millimètres">
+
+            <span class="unite">mm</span>
+
+            <button type="button" id="plus"
+                aria-label="Augmenter le diamètre">+</button>
+        </div>
+
+        <div class="resultat" aria-live="polite">
+            <p>VITESSE DE ROTATION</p>
+            <div id="valeur">---</div>
+            <div class="trmin">TR/MIN</div>
+        </div>
+
+        <button class="calculer" id="calculer">
+            CALCULER LA VITESSE
+        </button>
+
+        <div id="message" role="alert"></div>
+
+    </main>
+
+    <footer class="pied">
+        OUTIL DE CALCUL POUR ATELIER
+    </footer>
+
+</div>
+
+<script>
+const vitesses = {
+    Acier: 22,
+    Laiton: 60,
+    Fonte: 22,
+    Bronze: 50
+};
+
+let materiauSelectionne = "Acier";
+
+const diametre = document.getElementById("diametre");
+const valeur = document.getElementById("valeur");
+const message = document.getElementById("message");
+
+// Sélection du matériau
+document.querySelectorAll(".materiau").forEach(bouton => {
+    bouton.addEventListener("click", () => {
+
+        document.querySelectorAll(".materiau")
+            .forEach(b => {
+                b.classList.remove("actif");
+                b.setAttribute("aria-pressed", "false");
+            });
+
+        bouton.classList.add("actif");
+        bouton.setAttribute("aria-pressed", "true");
+
+        materiauSelectionne = bouton.dataset.materiau;
+
+        calculer();
+    });
+});
+
+// Augmenter le diamètre
+document.getElementById("plus").addEventListener("click", () => {
+    let d = Number(diametre.value) || 0;
+    diametre.value = (d + 0.5).toString();
+    calculer();
+});
+
+// Diminuer le diamètre
+document.getElementById("moins").addEventListener("click", () => {
+    let d = Number(diametre.value) || 0;
+
+    if (d > 0.5) {
+        diametre.value = (d - 0.5).toString();
+        calculer();
+    }
+});
+
+// Fonction de calcul
+function calculer() {
+
+    const d = Number(diametre.value);
+    const v = vitesses[materiauSelectionne];
+
+    if (!Number.isFinite(d) || d <= 0) {
+        valeur.textContent = "---";
+        message.textContent =
+            "Veuillez entrer un diamètre valide.";
+        return;
+    }
+
+    // Formule : N = (1000 x Vc) / (Pi x D)
+    const frequence = (1000 * v) / (Math.PI * d);
+
+    valeur.textContent =
+        Math.round(frequence).toLocaleString("fr-FR");
+
+    message.textContent = "";
+}
+
+// Bouton calculer
+document.getElementById("calculer")
+    .addEventListener("click", calculer);
+
+// Mise à jour automatique lors de la saisie
+diametre.addEventListener("input", calculer);
+
+// Calcul initial
+calculer();
+
+</script>
+
+</body>
+</html>
